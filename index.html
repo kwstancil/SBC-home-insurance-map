@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>Visualizing the U.S. Home Insurance Crisis at the ZIP Code Level</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+  <!-- maplibre-gl.css here -->
+  <link href="https://unpkg.com/maplibre-gl@^5.2.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <!-- Rubik font -->
+  <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+
+  <style>
+    /* basic css to style the viewer goes here */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* set styles for the container holding the title and slider */
+    .session {
+      position: absolute;
+      z-index: 1;
+      background-color: rgba(255, 255, 255, 0.75);
+      border-radius: 3px;
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+      top: 10px;
+      left: 10px;
+      padding: 5px;
+    }
+
+    /* set styles for the container holding the year legend */
+    .container {
+      display: table;
+      width: 100%;
+      margin: 0;
+    }
+
+    /* set font styles for the title */
+    h1 {
+      font-size: 20px;
+      font-family: 'Lato', sans-serif;
+      padding-bottom: 0px;
+      padding-top: 0px;
+      font-weight: normal;
+    }
+
+    /* set font styles for the identified year */
+    h2 {
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      padding-bottom: 0px;
+      padding-top: 0px;
+      font-weight: normal;
+      width: 50%;
+      text-align: left;
+      display: table-cell;
+    }
+
+    footer {
+        position: absolute;
+        z-index: 1;
+        background-color: rgba(255, 255, 255, 0.75);
+        border-radius: 3px;
+        box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+        font-size: 12px;
+        font-family: 'Lato', sans-serif;
+        bottom: 10px;
+        left: 10px;
+        padding-left: 5px;
+        font-weight: normal;
+        width: 25%;
+      }
+
+    /* define the slider width and change the cursor to a pointer on hover */
+    #slider {
+      cursor: pointer;
+      width: 275px;
+    }
+
+    /* place the dropdown menu in the top right corner next to the navigation control */
+    #layerbar {
+      position: absolute;
+      /* Using absolute positioning is okay if the map container is also positioned */
+      z-index: 1;
+      background-color: rgba(255, 255, 255, 0.75);
+      /* Slightly more visible */
+      border-radius: 3px;
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+      top: 10px;
+      /* 10px from the top */
+      right: 50px;
+      /* 5px to the left of the navigation control */
+      padding: 5px;
+      width: auto;
+      white-space: nowrap;
+    }
+
+    /* Ensure the select element doesn't stretch */
+    #layerbar select {
+      margin: 0;
+    }
+
+    #legend {
+      background-color: rgba(255, 255, 255, 0.75);
+      border-radius: 3px;
+      bottom: 40px;
+      width: 100px;
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+      font: 12px/20px 'Lato', 'Lato', 'Lato', sans-serif;
+      padding: 10px;
+      position: absolute;
+      right: 10px;
+      z-index: 1;
+      line-height: 18px;
+      color: black;
+    }
+
+    /* conditions for smaller screens */
+        @media only screen and (max-width: 600px) {
+
+          #map {
+            top: 0;
+            bottom: 0;
+            width: 100%;
+          }
+
+          .session {
+            position: absolute;
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.75);
+            border-radius: 3px;
+            box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+            top: 10px;
+            left: 10px;
+            padding: 5px;
+            width: 130px;
+          }
+
+          h1 {
+            font-size: 12px;
+            font-family: 'Lato', sans-serif;
+            padding-bottom: 0px;
+            padding-top: 0px;
+            font-weight: normal;
+          }
+
+          h2 {
+            cursor: pointer;
+            font-size: 10px;
+            font-family: 'Lato', sans-serif;
+            padding-bottom: 0px;
+            padding-top: 0px;
+            font-weight: normal;
+            width: 50%;
+            text-align: left;
+            display: table-cell;
+          }
+
+          #slider {
+            cursor: pointer;
+            width: 125px;
+          }
+
+          #layerbar {
+            position: absolute;
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.75);
+            border-radius: 3px;
+            box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+            top: 10px;
+            right: 50px;
+            padding: 5px;
+            width: 150px;
+            white-space: nowrap;
+          }
+
+          #layerbar select {
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            font-size: 10px;
+            width: 100%;
+          }
+
+          #legend {
+            background-color: rgba(255, 255, 255, 0.75);
+            border-radius: 3px;
+            bottom: 40px;
+            width: auto;
+            box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+            font: 12px/15px 'Lato', 'Lato', 'Lato', sans-serif;
+            padding: 10;
+            position: absolute;
+            right: 10px;
+            z-index: 1;
+            line-height: 18px;
+            color: black;
+          }
+        }
+
+  </style>
+
+</head>
+
+<body>
+  <!-- id the map div -->
+  <div id='map'>
+    <!-- choropleth legend -->
+    <div class='map-overlay' id='legend'></div>
+    <!-- title and time slider -->
+    <div class='session' id='sliderbar'>
+        <!-- the shown title of the map -->
+        <h1>Visualizing the U.S. Home Insurance Crisis at the ZIP Code Level, 2018-2022</h1>
+        <div class='container'>
+        <!-- the selected year -->
+        <h2>Year: <label id='active-year'>2018</label></h2>
+        </div>
+        <!-- the slider has a range from 2018 to 2022, intervals of 1 year, and an initial value of 2018 -->
+        <input id='slider' class='row' type='range' min='2018' max='2022' step='1' value='2018' />
+    </div>
+
+    <!-- create a dropdown menu with the title "Select Layer" and three options to choose from -->
+    <div class='dropdown' id='layerbar'>
+        <h1>Select Layer</h1>
+        <select id='layer-select'>
+            <option class="dropval" value='Nonrenewal'>Nonrenewal Rate</option>
+            <option class="dropval" value='Nonpayment_Cancellation'>Nonpayment Cancellation Rate</option>
+            <option class="dropval" value='Other_Than_Nonpayment_Cancellation'>Other Cancellation Rate</option>
+        </select>
+    </div>
+  </div>
+
+  <footer>
+    <p>Map: Kenny Stancil, Revolving Door Project and Jay Bowen, GIS developer</p>
+    <p>Data: <a href='https://home.treasury.gov/news/press-releases/jy2791'>U.S. Treasury Department, Federal Insurance Office</a></p>
+  </footer>
+
+  <!-- maplibre-gl.js library -->
+  <script src="https://unpkg.com/maplibre-gl@^5.2.0/dist/maplibre-gl.js"></script>
+  <!-- pmtiles.js library -->
+  <script src="https://unpkg.com/pmtiles@4.3.0/dist/pmtiles.js"></script>
+  <!-- chroma.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.1.0/chroma.min.js"></script>
+
+
+  <script>
+    let protocol = new pmtiles.Protocol({
+      metadata: true
+    });
+    maplibregl.addProtocol("pmtiles", protocol.tile);
+
+    // define the map
+    const map = new maplibregl.Map({
+      container: 'map',
+      center: [-94.46, 39.6],
+      zoom: 1,
+      minZoom: 0,
+      maxZoom: 15,
+      style: 'https://api.maptiler.com/maps/toner-v2-lite/style.json?key=vMrOamZaZNCemOlyBx20'
+    });
+
+    // fit the map to the United States
+    map.fitBounds([
+      [-125.0, 24.0],
+      [-66.0, 50.0]
+    ]);
+
+    // add the navigation control
+    map.addControl(new maplibregl.NavigationControl({
+      visualizePitch: true,
+      showZoom: true,
+      showCompass: true
+    }));
+
+    // add the scale control
+    // map.addControl(new maplibregl.ScaleControl({
+    //   position: 'bottom-left',
+    //  unit: 'imperial'
+    // }));
+
+    // define the slider
+    const slider = document.getElementById('slider');
+    // get the value from the slider
+    let initialYear = slider.value;
+
+    // define the dropdown menu
+    const layerSelect = document.getElementById('layer-select');
+    // get the value from the dropdown
+    let dropdownValue = layerSelect.value;
+
+    // define the initial layer
+    let initialLayer = `${initialYear}_${dropdownValue}_Rate`;
+
+    // function to update the fill-color style
+    function updateLayerStyle() {
+      map.setPaintProperty('uszipcodes-fill', 'fill-color', [
+        'case',
+        ['all', ['>=', ['get', initialLayer], 0],
+          ['<', ['get', initialLayer], 0.44]
+        ], '#fef0d9', // rate between 0 and 0.44
+        ['all', ['>=', ['get', initialLayer], 0.44],
+          ['<', ['get', initialLayer], 0.96]
+        ], '#fdcc8a', // rate between 0.44 and 0.96
+        ['all', ['>=', ['get', initialLayer], 0.96],
+          ['<', ['get', initialLayer], 1.39]
+        ], '#fc8d59', // rate between 0.96 and 1.39
+        ['all', ['>=', ['get', initialLayer], 1.39],
+          ['<', ['get', initialLayer], 2.08]
+        ], '#e34a33', // rate between 1.39 and 2.08
+        ['all', ['>=', ['get', initialLayer], 2.08],
+          ['<=', ['get', initialLayer], 20.69]
+        ], '#b30000', // rate between 2.08 and 20.69
+        'rgba(0,0,0,0)' // Default color if none of the above ranges match
+      ]);
+    }
+
+    // on map load...
+    map.on('load', () => {
+
+      const layers = map.getStyle().layers;
+            // Find the index of the first symbol layer in the map style
+            let firstSymbolId;
+            for (const layer of layers) {
+              if (layer.type === 'symbol') {
+                firstSymbolId = layer.id;
+                break;
+              }
+            }
+
+      let popup = new maplibregl.Popup({
+        closeButton: false,
+        closeOnClick: false
+      });
+      let hoveredStateId = null;
+      let hoveredStateZipId = null;
+
+      // add the data source
+      map.addSource('uszipcodes', {
+        type: 'vector',
+        url: 'pmtiles://data/uszipcodes.pmtiles'
+      });
+
+      map.addLayer({
+        'id': 'uszipcodes-fill',
+        'type': 'fill',
+        'source': 'uszipcodes',
+        'source-layer': 'uszipcodes',
+        'layout': {
+          'visibility': 'visible'
+        },
+        'minzoom': 0,
+        'maxzoom': 16,
+        'paint': {
+          'fill-color': [
+            'case',
+            ['all', ['>=', ['get', initialLayer], 0],
+              ['<', ['get', initialLayer], 0.44]
+            ], '#fef0d9', // rate between 0 and 0.44
+            ['all', ['>=', ['get', initialLayer], 0.44],
+              ['<', ['get', initialLayer], 0.96]
+            ], '#fdcc8a', // rate between 0.44 and 0.96
+            ['all', ['>=', ['get', initialLayer], 0.96],
+              ['<', ['get', initialLayer], 1.39]
+            ], '#fc8d59', // rate between 0.96 and 1.39
+            ['all', ['>=', ['get', initialLayer], 1.39],
+              ['<', ['get', initialLayer], 2.08]
+            ], '#e34a33', // rate between 1.39 and 2.08
+            ['all', ['>=', ['get', initialLayer], 2.08],
+              ['<=', ['get', initialLayer], 20.69]
+            ], '#b30000', // rate between 2.08 and 20.69
+            'rgba(0,0,0,0)' // Default color if none of the above ranges match
+          ],
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false], 0.75, // If hovered, set opacity to 0.75
+            0.5 // Default opacity is 0.5
+          ]
+        }
+      }, firstSymbolId);
+
+      // add the border layer (polygon borders)
+      map.addLayer({
+        'id': 'uszipcodes-border',
+        'type': 'line',
+        'source': 'uszipcodes',
+        'source-layer': 'uszipcodes',
+        'layout': {
+          'visibility': 'visible'
+        },
+        'minzoom': 0,
+        'maxzoom': 16,
+        'paint': {
+          'line-color': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false], 'rgba(240, 255, 0, 1)', // If hovered, set color to yellow
+            'rgba(0,0,0,1)' // Default color is black
+          ],
+          // set the border width based on the zoom level
+          'line-width': {
+            'base': 1.5, // Optional base scaling factor
+            'stops': [
+              [0, 0.1], // At zoom level 0, the line width will be 0.1
+              [15, 1.5] // At zoom level 15, the line width will be 1.5
+            ]
+          }
+        }
+      });
+
+      // add mouseover effect for the border layer
+      map.on('mousemove', 'uszipcodes-border', (e) => {
+        map.getCanvas().style.cursor = 'pointer';
+        if (e.features.length > 0) {
+          if (hoveredStateId !== null) {
+            map.setFeatureState({
+              source: 'uszipcodes',
+              sourceLayer: 'uszipcodes',
+              id: hoveredStateId
+            }, {
+              hover: false
+            });
+          }
+          hoveredStateId = e.features[0].id;
+          map.setFeatureState({
+            source: 'uszipcodes',
+            sourceLayer: 'uszipcodes',
+            id: hoveredStateId
+          }, {
+            hover: true
+          });
+        }
+      });
+
+      map.on('mouseleave', 'uszipcodes-border', () => {
+        map.getCanvas().style.cursor = '';
+        if (hoveredStateId !== null) {
+          map.setFeatureState({
+            source: 'uszipcodes',
+            sourceLayer: 'uszipcodes',
+            id: hoveredStateId
+          }, {
+            hover: false
+          });
+        }
+        hoveredStateId = null;
+      });
+
+      // add mouseover effect for the fill layer
+      map.on('mousemove', 'uszipcodes-fill', (e) => {
+        map.getCanvas().style.cursor = 'pointer';
+        if (e.features.length > 0) {
+          if (hoveredStateZipId !== null) {
+            map.setFeatureState({
+              source: 'uszipcodes',
+              sourceLayer: 'uszipcodes',
+              id: hoveredStateZipId
+            }, {
+              hover: false
+            });
+          }
+          hoveredStateZipId = e.features[0].id;
+          map.setFeatureState({
+            source: 'uszipcodes',
+            sourceLayer: 'uszipcodes',
+            id: hoveredStateZipId
+          }, {
+            hover: true
+          });
+        }
+        // define the properties of the hovered ZIP code
+        let props = e.features[0].properties;
+        // get the ZIP code value
+        let zip = props.ZIP_Code;
+        // declare the rate variable
+        let rate;
+        // check if the rate is -1 (no data) and set the rate variable accordingly
+        if (props[initialLayer] === -1) {
+          rate = 'No Data';
+        } else {
+          rate = props[initialLayer] + '%';
+        }
+        // set the popup location and content
+        popup.setLngLat(e.lngLat)
+          .setHTML(`<b>ZIP Code</b><br>${zip}<br><b>Rate</b><br>${rate}`)
+          .addTo(map);
+      });
+
+      map.on('mouseleave', 'uszipcodes-fill', () => {
+        map.getCanvas().style.cursor = '';
+        if (hoveredStateZipId !== null) {
+          map.setFeatureState({
+            source: 'uszipcodes',
+            sourceLayer: 'uszipcodes',
+            id: hoveredStateZipId
+          }, {
+            hover: false
+          });
+        }
+        hoveredStateZipId = null;
+        // remove the popup when the mouse leaves the ZIP code
+        popup.remove();
+      });
+
+    });
+
+    // add event listeners for the slider and dropdown
+    slider.addEventListener('input', () => {
+      initialYear = slider.value;
+      initialLayer = `${initialYear}_${dropdownValue}_Rate`; // update the initialLayer value
+      updateLayerStyle(); // update the layer style based on new values
+      document.getElementById('active-year').textContent = initialYear; // update the active year label
+    });
+
+    layerSelect.addEventListener('change', () => {
+      dropdownValue = layerSelect.value;
+      initialLayer = `${initialYear}_${dropdownValue}_Rate`; // update the initialLayer value
+      updateLayerStyle(); // update the layer style based on new values
+    });
+
+      // Add the legend
+      const legend = document.getElementById('legend');
+      const colors = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000'];
+      const labels = ['0%-0.43%', '0.44%-0.95%', '0.96%-1.38%', '1.39%-2.07%', '2.08%-20.69%'];
+      const legendTitle = document.createElement('label');
+      legendTitle.style.fontWeight = 'bold';
+      legendTitle.style.margin = '0 0 5px';
+      legendTitle.textContent = 'Rate';
+      legend.appendChild(legendTitle);
+      for (let i = 0; i < colors.length; i++) {
+        const div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.marginBottom = '5px';
+        const color = document.createElement('div');
+        color.style.width = '20px';
+        color.style.height = '20px';
+        color.style.backgroundColor = colors[i];
+        color.style.borderRadius = '50%';
+        color.style.marginRight = '5px';
+        div.appendChild(color);
+        const label = document.createElement('span');
+        label.style.fontFamily = 'Lato';
+        label.style.fontSize = '11px';
+        label.textContent = labels[i];
+        div.appendChild(label);
+        legend.appendChild(div);
+      }
+  </script>
+
+</body>
