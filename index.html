@@ -477,7 +477,7 @@
         // get the County value
         let county = props.County;
         // declare the rate variable
-        let rate = props[initialLayer] + '%';
+        let rate = (props[initialLayer] !== undefined && !isNaN(props[initialLayer])) ? props[initialLayer] + '%' : 'N/A';
         // set the popup location and content
         popup.setLngLat(e.lngLat)
           .setHTML(`<b>County</b><br>${county}<br><b>Rate</b><br>${rate}`)
