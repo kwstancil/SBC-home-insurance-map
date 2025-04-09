@@ -3,7 +3,7 @@
 
 <head>
   <meta charset='utf-8' />
-  <title>Visualizing the U.S. Home Insurance Crisis at the ZIP Code Level</title>
+  <title>Visualizing the U.S. Home Insurance Crisis at the County Level</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
   <!-- maplibre-gl.css here -->
@@ -219,30 +219,27 @@
     <!-- title and time slider -->
     <div class='session' id='sliderbar'>
         <!-- the shown title of the map -->
-        <h1>Visualizing the U.S. Home Insurance Crisis at the ZIP Code Level, 2018-2022</h1>
+        <h1>Visualizing the U.S. Home Insurance Crisis at the County Level, 2018-2023</h1>
         <div class='container'>
         <!-- the selected year -->
         <h2>Year: <label id='active-year'>2018</label></h2>
         </div>
-        <!-- the slider has a range from 2018 to 2022, intervals of 1 year, and an initial value of 2018 -->
-        <input id='slider' class='row' type='range' min='2018' max='2022' step='1' value='2018' />
+        <!-- the slider has a range from 2018 to 2023, intervals of 1 year, and an initial value of 2018 -->
+        <input id='slider' class='row' type='range' min='2018' max='2023' step='1' value='2018' />
     </div>
 
     <!-- create a dropdown menu with the title "Select Layer" and three options to choose from -->
     <div class='dropdown' id='layerbar'>
         <h1>Select Layer</h1>
         <select id='layer-select'>
-            <option class="dropval" value='Nonrenewal'>Nonrenewal Rate</option>
-            <option class="dropval" value='Nonpayment_Cancellation'>Nonpayment Cancellation Rate</option>
-            <option class="dropval" value='Other_Than_Nonpayment_Cancellation'>Other Cancellation Rate</option>
+            <option class="dropval" value='Nonrenewal_Rate'>Nonrenewal Rate</option>
         </select>
     </div>
   </div>
 
   <footer>
     <p>Map: Kenny Stancil, Revolving Door Project and Jay Bowen, GIS developer</p>
-    <p>Data: <a href='https://home.treasury.gov/news/press-releases/jy2791'>U.S. Treasury Department, Federal Insurance Office</a></p>
-  </footer>
+    <p>Data: <a href='https://www.budget.senate.gov/chairman/newsroom/press/new-data-reveal-climate-change-driven-insurance-crisis-is-spreading' target =_blank>Senate Budget Committee</a></p>
 
   <!-- maplibre-gl.js library -->
   <script src="https://unpkg.com/maplibre-gl@^5.2.0/dist/maplibre-gl.js"></script>
@@ -298,11 +295,11 @@
     let dropdownValue = layerSelect.value;
 
     // define the initial layer
-    let initialLayer = `${initialYear}_${dropdownValue}_Rate`;
+    let initialLayer = `${initialYear}_${dropdownValue}`;
 
     // function to update the fill-color style
     function updateLayerStyle() {
-      map.setPaintProperty('uszipcodes-fill', 'fill-color', [
+      map.setPaintProperty('uscounties-fill', 'fill-color', [
         'case',
         ['all', ['>=', ['get', initialLayer], 0],
           ['<', ['get', initialLayer], 0.44]
@@ -341,19 +338,19 @@
         closeOnClick: false
       });
       let hoveredStateId = null;
-      let hoveredStateZipId = null;
+      let hoveredStateCountyId = null;
 
       // add the data source
-      map.addSource('uszipcodes', {
+      map.addSource('uscounties', {
         type: 'vector',
-        url: 'pmtiles://data/uszipcodes.pmtiles'
+        url: 'pmtiles://data/uscounties.pmtiles'
       });
 
       map.addLayer({
-        'id': 'uszipcodes-fill',
+        'id': 'uscounties-fill',
         'type': 'fill',
-        'source': 'uszipcodes',
-        'source-layer': 'uszipcodes',
+        'source': 'uscounties',
+        'source-layer': 'uscounties',
         'layout': {
           'visibility': 'visible'
         },
@@ -389,10 +386,10 @@
 
       // add the border layer (polygon borders)
       map.addLayer({
-        'id': 'uszipcodes-border',
+        'id': 'uscounties-border',
         'type': 'line',
-        'source': 'uszipcodes',
-        'source-layer': 'uszipcodes',
+        'source': 'uscounties',
+        'source-layer': 'uscounties',
         'layout': {
           'visibility': 'visible'
         },
@@ -416,13 +413,13 @@
       });
 
       // add mouseover effect for the border layer
-      map.on('mousemove', 'uszipcodes-border', (e) => {
+      map.on('mousemove', 'uscounties-border', (e) => {
         map.getCanvas().style.cursor = 'pointer';
         if (e.features.length > 0) {
           if (hoveredStateId !== null) {
             map.setFeatureState({
-              source: 'uszipcodes',
-              sourceLayer: 'uszipcodes',
+              source: 'uscounties',
+              sourceLayer: 'uscounties',
               id: hoveredStateId
             }, {
               hover: false
@@ -430,8 +427,8 @@
           }
           hoveredStateId = e.features[0].id;
           map.setFeatureState({
-            source: 'uszipcodes',
-            sourceLayer: 'uszipcodes',
+            source: 'uscounties',
+            sourceLayer: 'uscounties',
             id: hoveredStateId
           }, {
             hover: true
@@ -439,12 +436,12 @@
         }
       });
 
-      map.on('mouseleave', 'uszipcodes-border', () => {
+      map.on('mouseleave', 'uscounties-border', () => {
         map.getCanvas().style.cursor = '';
         if (hoveredStateId !== null) {
           map.setFeatureState({
-            source: 'uszipcodes',
-            sourceLayer: 'uszipcodes',
+            source: 'uscounties',
+            sourceLayer: 'uscounties',
             id: hoveredStateId
           }, {
             hover: false
@@ -454,58 +451,52 @@
       });
 
       // add mouseover effect for the fill layer
-      map.on('mousemove', 'uszipcodes-fill', (e) => {
+      map.on('mousemove', 'uscounties-fill', (e) => {
         map.getCanvas().style.cursor = 'pointer';
         if (e.features.length > 0) {
-          if (hoveredStateZipId !== null) {
+          if (hoveredStateCountyId !== null) {
             map.setFeatureState({
-              source: 'uszipcodes',
-              sourceLayer: 'uszipcodes',
-              id: hoveredStateZipId
+              source: 'uscounties',
+              sourceLayer: 'uscounties',
+              id: hoveredStateCountyId
             }, {
               hover: false
             });
           }
-          hoveredStateZipId = e.features[0].id;
+          hoveredStateCountyId = e.features[0].id;
           map.setFeatureState({
-            source: 'uszipcodes',
-            sourceLayer: 'uszipcodes',
-            id: hoveredStateZipId
+            source: 'uscounties',
+            sourceLayer: 'uscounties',
+            id: hoveredStateCountyId
           }, {
             hover: true
           });
         }
-        // define the properties of the hovered ZIP code
+        // define the properties of the hovered County
         let props = e.features[0].properties;
-        // get the ZIP code value
-        let zip = props.ZIP_Code;
+        // get the County value
+        let county = props.County;
         // declare the rate variable
-        let rate;
-        // check if the rate is -1 (no data) and set the rate variable accordingly
-        if (props[initialLayer] === -1) {
-          rate = 'No Data';
-        } else {
-          rate = props[initialLayer] + '%';
-        }
+        let rate = props[initialLayer] + '%';
         // set the popup location and content
         popup.setLngLat(e.lngLat)
-          .setHTML(`<b>ZIP Code</b><br>${zip}<br><b>Rate</b><br>${rate}`)
+          .setHTML(`<b>County</b><br>${county}<br><b>Rate</b><br>${rate}`)
           .addTo(map);
       });
 
-      map.on('mouseleave', 'uszipcodes-fill', () => {
+      map.on('mouseleave', 'uscounties-fill', () => {
         map.getCanvas().style.cursor = '';
-        if (hoveredStateZipId !== null) {
+        if (hoveredStateCountyId !== null) {
           map.setFeatureState({
-            source: 'uszipcodes',
-            sourceLayer: 'uszipcodes',
-            id: hoveredStateZipId
+            source: 'uscounties',
+            sourceLayer: 'uscounties',
+            id: hoveredStateCountyId
           }, {
             hover: false
           });
         }
-        hoveredStateZipId = null;
-        // remove the popup when the mouse leaves the ZIP code
+        hoveredStateCountyId = null;
+        // remove the popup when the mouse leaves the County
         popup.remove();
       });
 
