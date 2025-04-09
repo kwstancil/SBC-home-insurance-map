@@ -228,7 +228,7 @@
         <input id='slider' class='row' type='range' min='2018' max='2023' step='1' value='2018' />
     </div>
 
-    <!-- create a dropdown menu with the title "Select Layer" and three options to choose from -->
+    <!-- create a dropdown menu with the title "Select Layer" -->
     <div class='dropdown' id='layerbar'>
         <h1>Select Layer</h1>
         <select id='layer-select'>
@@ -302,20 +302,20 @@
       map.setPaintProperty('uscounties-fill', 'fill-color', [
         'case',
         ['all', ['>=', ['get', initialLayer], 0],
-          ['<', ['get', initialLayer], 0.44]
-        ], '#fef0d9', // rate between 0 and 0.44
-        ['all', ['>=', ['get', initialLayer], 0.44],
-          ['<', ['get', initialLayer], 0.96]
-        ], '#fdcc8a', // rate between 0.44 and 0.96
-        ['all', ['>=', ['get', initialLayer], 0.96],
+          ['<', ['get', initialLayer], 0.67]
+        ], '#fef0d9', // rate between 0 and 0.67
+        ['all', ['>=', ['get', initialLayer], 0.68],
           ['<', ['get', initialLayer], 1.39]
-        ], '#fc8d59', // rate between 0.96 and 1.39
-        ['all', ['>=', ['get', initialLayer], 1.39],
-          ['<', ['get', initialLayer], 2.08]
-        ], '#e34a33', // rate between 1.39 and 2.08
-        ['all', ['>=', ['get', initialLayer], 2.08],
-          ['<=', ['get', initialLayer], 20.69]
-        ], '#b30000', // rate between 2.08 and 20.69
+        ], '#fdcc8a', // rate between 0.68 and 1.39
+        ['all', ['>=', ['get', initialLayer], 1.40],
+          ['<', ['get', initialLayer], 2.81]
+        ], '#fc8d59', // rate between 1.40 and 2.81
+        ['all', ['>=', ['get', initialLayer], 2.82],
+          ['<', ['get', initialLayer], 6.18]
+        ], '#e34a33', // rate between 2.82 and 6.18
+        ['all', ['>=', ['get', initialLayer], 6.19],
+          ['<=', ['get', initialLayer], 32.46]
+        ], '#b30000', // rate between 6.19 and 32.46
         'rgba(0,0,0,0)' // Default color if none of the above ranges match
       ]);
     }
