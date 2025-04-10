@@ -302,20 +302,20 @@
       map.setPaintProperty('uscounties-fill', 'fill-color', 
       ['case',
         ['all', ['>=', ['get', initialLayer], 0],
-          ['<', ['get', initialLayer], 0.67]
-        ], '#fef0d9', // rate between 0 and 0.67
-        ['all', ['>=', ['get', initialLayer], 0.68],
-          ['<', ['get', initialLayer], 1.39]
-        ], '#fdcc8a', // rate between 0.68 and 1.39
-        ['all', ['>=', ['get', initialLayer], 1.40],
-          ['<', ['get', initialLayer], 2.81]
-        ], '#fc8d59', // rate between 1.40 and 2.81
-        ['all', ['>=', ['get', initialLayer], 2.82],
-          ['<', ['get', initialLayer], 6.18]
-        ], '#e34a33', // rate between 2.82 and 6.18
-        ['all', ['>=', ['get', initialLayer], 6.19],
+          ['<=', ['get', initialLayer], 0.65]
+        ], '#fef0d9', // rate between 0 and 0.65
+        ['all', ['>=', ['get', initialLayer], 0.66],
+          ['<=', ['get', initialLayer], 1.20]
+        ], '#fdcc8a', // rate between 0.66 and 1.20
+        ['all', ['>=', ['get', initialLayer], 1.21],
+          ['<=', ['get', initialLayer], 2.24]
+        ], '#fc8d59', // rate between 1.21 and 2.24
+        ['all', ['>=', ['get', initialLayer], 2.25],
+          ['<=', ['get', initialLayer], 5.40]
+        ], '#e34a33', // rate between 2.25 and 5.40
+        ['all', ['>=', ['get', initialLayer], 5.41],
           ['<=', ['get', initialLayer], 32.46]
-        ], '#b30000', // rate between 6.19 and 32.46
+        ], '#b30000', // rate between 5.41 and 32.46
         'rgba(0,0,0,0)' // Default color if none of the above ranges match
       ]);
     }
@@ -360,20 +360,20 @@
           'fill-color': 
           ['case',
         ['all', ['>=', ['get', initialLayer], 0],
-          ['<', ['get', initialLayer], 0.67]
-        ], '#fef0d9', // rate between 0 and 0.67
-        ['all', ['>=', ['get', initialLayer], 0.68],
-          ['<', ['get', initialLayer], 1.39]
-        ], '#fdcc8a', // rate between 0.68 and 1.39
-        ['all', ['>=', ['get', initialLayer], 1.40],
-          ['<', ['get', initialLayer], 2.81]
-        ], '#fc8d59', // rate between 1.40 and 2.81
-        ['all', ['>=', ['get', initialLayer], 2.82],
-          ['<', ['get', initialLayer], 6.18]
-        ], '#e34a33', // rate between 2.82 and 6.18
-        ['all', ['>=', ['get', initialLayer], 6.19],
+          ['<=', ['get', initialLayer], 0.65]
+        ], '#fef0d9', // rate between 0 and 0.65
+        ['all', ['>=', ['get', initialLayer], 0.66],
+          ['<=', ['get', initialLayer], 1.20]
+        ], '#fdcc8a', // rate between 0.66 and 1.20
+        ['all', ['>=', ['get', initialLayer], 1.21],
+          ['<=', ['get', initialLayer], 2.24]
+        ], '#fc8d59', // rate between 1.21 and 2.24
+        ['all', ['>=', ['get', initialLayer], 2.25],
+          ['<=', ['get', initialLayer], 5.40]
+        ], '#e34a33', // rate between 2.25 and 5.40
+        ['all', ['>=', ['get', initialLayer], 5.41],
           ['<=', ['get', initialLayer], 32.46]
-        ], '#b30000', // rate between 6.19 and 32.46
+        ], '#b30000', // rate between 5.41 and 32.46
         'rgba(0,0,0,0)' // Default color if none of the above ranges match
       ],
           'fill-opacity': [
@@ -477,7 +477,7 @@
         // get the County value
         let county = props.County;
         // declare the rate variable
-        let rate = (props[initialLayer] !== undefined && !isNaN(props[initialLayer])) ? props[initialLayer] + '%' : 'N/A';
+        let rate = (props[initialLayer] !== -99999 && !isNaN(props[initialLayer])) ? props[initialLayer] + '%' : 'No Data';
         // set the popup location and content
         popup.setLngLat(e.lngLat)
           .setHTML(`<b>County</b><br>${county}<br><b>Rate</b><br>${rate}`)
@@ -519,7 +519,7 @@
       // Add the legend
       const legend = document.getElementById('legend');
       const colors = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000'];
-      const labels = ['0% - 0.67%', '0.68% - 1.39%', '1.40% - 2.81%', '2.82% - 6.18%', '6.19% - 32.46%'];
+      const labels = ['0% - 0.65%', '0.66% - 1.20%', '1.21% - 2.24%', '2.25% - 5.40%', '5.41% - 32.46%'];
       const legendTitle = document.createElement('label');
       legendTitle.style.fontWeight = 'bold';
       legendTitle.style.margin = '0 0 5px';
