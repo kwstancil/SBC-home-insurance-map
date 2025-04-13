@@ -262,7 +262,7 @@
       zoom: 1,
       minZoom: 0,
       maxZoom: 15,
-      style: 'https://api.maptiler.com/maps/toner-v2-lite/style.json?key=vMrOamZaZNCemOlyBx20'
+      style: 'https://api.maptiler.com/maps/toner-v2-lite/style.json?key=AcE4mDnIiEf0GshOlFWA'
     });
 
     // fit the map to the United States
@@ -303,19 +303,19 @@
       ['case',
         ['all', ['>=', ['get', initialLayer], 0],
           ['<=', ['get', initialLayer], 0.65]
-        ], '#fef0d9', // rate between 0 and 0.65
+        ], '#ffffb2', // rate between 0 and 0.65
         ['all', ['>=', ['get', initialLayer], 0.66],
           ['<=', ['get', initialLayer], 1.20]
-        ], '#fdcc8a', // rate between 0.66 and 1.20
+        ], '#fecc5c', // rate between 0.66 and 1.20
         ['all', ['>=', ['get', initialLayer], 1.21],
           ['<=', ['get', initialLayer], 2.24]
-        ], '#fc8d59', // rate between 1.21 and 2.24
+        ], '#fd8d3c', // rate between 1.21 and 2.24
         ['all', ['>=', ['get', initialLayer], 2.25],
           ['<=', ['get', initialLayer], 5.40]
-        ], '#e34a33', // rate between 2.25 and 5.40
+        ], '#f03b20', // rate between 2.25 and 5.40
         ['all', ['>=', ['get', initialLayer], 5.41],
           ['<=', ['get', initialLayer], 32.46]
-        ], '#b30000', // rate between 5.41 and 32.46
+        ], '#bd0026', // rate between 5.41 and 32.46
         'rgba(0,0,0,0)' // Default color if none of the above ranges match
       ]);
     }
@@ -361,25 +361,25 @@
           ['case',
         ['all', ['>=', ['get', initialLayer], 0],
           ['<=', ['get', initialLayer], 0.65]
-        ], '#fef0d9', // rate between 0 and 0.65
+        ], '#ffffb2', // rate between 0 and 0.65
         ['all', ['>=', ['get', initialLayer], 0.66],
           ['<=', ['get', initialLayer], 1.20]
-        ], '#fdcc8a', // rate between 0.66 and 1.20
+        ], '#fecc5c', // rate between 0.66 and 1.20
         ['all', ['>=', ['get', initialLayer], 1.21],
           ['<=', ['get', initialLayer], 2.24]
-        ], '#fc8d59', // rate between 1.21 and 2.24
+        ], '#fd8d3c', // rate between 1.21 and 2.24
         ['all', ['>=', ['get', initialLayer], 2.25],
           ['<=', ['get', initialLayer], 5.40]
-        ], '#e34a33', // rate between 2.25 and 5.40
+        ], '#f03b20', // rate between 2.25 and 5.40
         ['all', ['>=', ['get', initialLayer], 5.41],
           ['<=', ['get', initialLayer], 32.46]
-        ], '#b30000', // rate between 5.41 and 32.46
+        ], '#bd0026', // rate between 5.41 and 32.46
         'rgba(0,0,0,0)' // Default color if none of the above ranges match
       ],
           'fill-opacity': [
             'case',
-            ['boolean', ['feature-state', 'hover'], false], 0.75, // If hovered, set opacity to 0.75
-            0.5 // Default opacity is 0.5
+            ['boolean', ['feature-state', 'hover'], false], 0.9, // If hovered, set opacity to 0.9
+            0.75 // Default opacity is 0.75
           ]
         }
       }, firstSymbolId);
@@ -518,7 +518,7 @@
 
       // Add the legend
       const legend = document.getElementById('legend');
-      const colors = ['#fef0d9', '#fdcc8a', '#fc8d59', '#e34a33', '#b30000'];
+      const colors = ['#ffffb2', '#fecc5c', '#fd8d3c', '#f03b20', '#bd0026'];
       const labels = ['0% - 0.65%', '0.66% - 1.20%', '1.21% - 2.24%', '2.25% - 5.40%', '5.41% - 32.46%'];
       const legendTitle = document.createElement('label');
       legendTitle.style.fontWeight = 'bold';
