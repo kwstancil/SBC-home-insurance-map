@@ -357,20 +357,19 @@
       });
       let hoveredStateId = null;
       let hoveredStateCountyId = null;
-      // add the data source
+/*
       map.addSource('uscounties', {
         type: 'vector',
         tiles: [location.origin+location.pathname+'data/uscounties/{z}/{x}/{y}.pbf'],
         minZoom: 0,
         maxZoom: 10
       });
-/*
+*/
       // add the data source
       map.addSource('uscounties', {
         type: 'vector',
         url: 'pmtiles://data/uscounties.pmtiles'
       });
-*/
       map.addLayer({
         'id': 'uscounties-fill',
         'type': 'fill',
