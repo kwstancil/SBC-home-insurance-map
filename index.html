@@ -276,7 +276,7 @@
       center: [-94.46, 39.6],
       zoom: 1,
       minZoom: 0,
-      maxZoom: 15,
+      maxZoom: 10,
       style: 'https://api.maptiler.com/maps/019635a5-5e59-7ab4-8f9d-186dab504828/style.json?key=AcE4mDnIiEf0GshOlFWA'
     });
 
@@ -357,19 +357,22 @@
       });
       let hoveredStateId = null;
       let hoveredStateCountyId = null;
-/*
+
+      // add the vector source for the counties
       map.addSource('uscounties', {
         type: 'vector',
+        //tiles: [location.origin+'/data/uscounties/{z}/{x}/{y}.pbf'],
         tiles: [location.origin+location.pathname+'data/uscounties/{z}/{x}/{y}.pbf'],
         minZoom: 0,
         maxZoom: 10
       });
-*/
+/*      
       // add the data source
       map.addSource('uscounties', {
         type: 'vector',
         url: 'pmtiles://data/uscounties.pmtiles'
       });
+*/
       map.addLayer({
         'id': 'uscounties-fill',
         'type': 'fill',
@@ -379,7 +382,7 @@
           'visibility': 'visible'
         },
         'minzoom': 0,
-        'maxzoom': 16,
+        'maxzoom': 10,
         'paint': {
           'fill-color': 
           ['case',
@@ -418,7 +421,7 @@
           'visibility': 'visible'
         },
         'minzoom': 0,
-        'maxzoom': 16,
+        'maxzoom': 10,
         'paint': {
           'line-color': [
             'case',
